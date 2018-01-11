@@ -1,7 +1,8 @@
 version: 2
 jobs:
   build_test_deploy:
-    machine: true
+    docker:
+      - image: buildpack-deps:jessie
     environment:
       USER_NAME: circleci
       USER_UID: 1001
@@ -9,6 +10,13 @@ jobs:
       TZ: Europe/Berlin
     steps:
       - checkout
+      - setup_remote_docker
+      - run:
+          name: Install Docker Compose
+          command: |
+            set -x
+            curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
       - run:
           name: Pull sbt docker image
           command: docker-compose pull base
@@ -81,6 +89,7 @@ jobs:
             set -x
             DOCKER_TAG=${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM} docker-compose up -d webknossos
             sleep 10
+
             ./test/infrastructure/deployment.bash
             docker-compose down --volumes --remove-orphans
 
@@ -91,7 +100,8 @@ jobs:
             cd webknossos-datastore
             DOCKER_TAG=${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM} docker-compose up -d webknossos-datastore
             sleep 10
-            curl --retry 3 --max-time 15 -v http://localhost:9090/data/health
+            docker run --network container:contacts buildpack-deps:jessie \
+              curl --retry 3 --max-time 15 -v http://localhost:9090/data/health
             docker-compose down --volumes --remove-orphans
 
       - run:
