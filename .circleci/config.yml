@@ -153,21 +153,21 @@ jobs:
             docker cp . $(docker-compose ps -q base):/home/circleci/webknossos
       - run:
           name: Install frontend dependencies
-          command: docker-compose exec base yarn install
+          command: docker-compose exec webknossos_base yarn install
       - run:
           name: Build frontend documentation
-          command: docker-compose exec base yarn run docs
+          command: docker-compose exec webknossos_base yarn run docs
       - run:
           name: Build webknossos (sbt and webpack)
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker-compose exec base sbt clean compile stage
+              docker-compose exec webknossos_base sbt clean compile stage
             else
-              docker-compose exec base sbt compile stage
+              docker-compose exec webknossos_base sbt compile stage
             fi
       - run:
           name: Build webknossos-datastore (sbt)
-          command: docker-compose exec base sbt "project webknossosDatastore" compile stage
+          command: docker-compose exec webknossos_base sbt "project webknossosDatastore" compile stage
 
       - run:
           name: Copy project back to host
@@ -185,13 +185,13 @@ jobs:
             - "~/.yarn-cache"
       - run:
           name: Lint frontend code
-          command: docker-compose exec base bash -c "yarn run lint && yarn run am-i-pretty"
+          command: docker-compose exec webknossos_base bash -c "yarn run lint && yarn run am-i-pretty"
       - run:
           name: Validate frontend types with flow
-          command: docker-compose exec base yarn flow
+          command: docker-compose exec webknossos_base yarn flow
       - run:
           name: Run frontend tests
-          command: docker-compose exec base yarn test-verbose
+          command: docker-compose exec webknossos_base yarn test-verbose
       - run:
           name: Stop base image
           command: docker-compose down --volumes --remove-orphans
