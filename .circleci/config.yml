@@ -90,7 +90,7 @@ jobs:
             DOCKER_TAG=${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM} docker-compose up -d webknossos
             sleep 10
             docker run --network container:project_webknossos_1 buildpack-deps:jessie \
-              curl --retry 3 --max-time 15 -v http://localhost:9000
+              curl --retry 3 --max-time 15 -I -v http://localhost:9000
             docker-compose down --volumes --remove-orphans
       - run:
           name: Run webknossos-datastore smoke test
@@ -99,8 +99,8 @@ jobs:
             cd webknossos-datastore
             DOCKER_TAG=${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM} docker-compose up -d webknossos-datastore
             sleep 10
-            docker run --network container:project_webknossos-datastore_1 buildpack-deps:jessie \
-              curl --retry 3 --max-time 15 -v http://localhost:9090/data/health
+            docker run --network container:webknossosdatastore_webknossos-datastore_1 buildpack-deps:jessie \
+              curl --retry 3 --max-time 15 -I -v http://localhost:9090/data/health
             docker-compose down --volumes --remove-orphans
 
       - run:
