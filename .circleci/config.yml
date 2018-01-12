@@ -28,13 +28,13 @@ jobs:
           name: Build webknossos (sbt and webpack)
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              sbt clean compile stage
+              sbt -Xmax-classfile-name 78 clean compile stage
             else
-              sbt compile stage
+              sbt -Xmax-classfile-name 78 compile stage
             fi
       - run:
           name: Build webknossos-datastore (sbt)
-          command: sbt "project webknossosDatastore" compile stage
+          command: sbt "project webknossosDatastore" -Xmax-classfile-name 78 compile stage
 
       - save_cache:
           key: cache-{{ checksum ".circleci/cache_version" }}-{{ .Branch }}-{{ .Revision }}
@@ -120,7 +120,7 @@ jobs:
 
   build_test_push_dockercp:
     docker:
-      - image: buildpack-deps:jessie
+      - image: docker
     environment:
       USER_NAME: circleci
       USER_UID: 1001
