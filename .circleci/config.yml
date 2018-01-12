@@ -89,7 +89,7 @@ jobs:
             set -x
             DOCKER_TAG=${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM} docker-compose up -d webknossos
             sleep 10
-            docker run --network container:webknossos_webknossos-datastore_1 buildpack-deps:jessie \
+            docker run --network container:webknossos buildpack-deps:jessie \
               curl --retry 3 --max-time 15 -v http://localhost:9000
             docker-compose down --volumes --remove-orphans
       - run:
@@ -99,7 +99,7 @@ jobs:
             cd webknossos-datastore
             DOCKER_TAG=${CIRCLE_BRANCH}__${CIRCLE_BUILD_NUM} docker-compose up -d webknossos-datastore
             sleep 10
-            docker run --network container:webknossos_webknossos-datastore_1 buildpack-deps:jessie \
+            docker run --network container:webknossos-datastore buildpack-deps:jessie \
               curl --retry 3 --max-time 15 -v http://localhost:9090/data/health
             docker-compose down --volumes --remove-orphans
 
