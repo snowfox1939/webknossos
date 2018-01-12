@@ -69,7 +69,7 @@ jobs:
           command: |
             set -x
             curl -fsSL get.docker.com -o get-docker.sh
-            sudo sh get-docker.sh
+            sh get-docker.sh
             curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
             chmod +x /usr/local/bin/docker-compose
 
@@ -147,7 +147,7 @@ jobs:
 
       - run:
           name: Start base image
-          command: docker-compose up -d base
+          command: docker-compose run -d base bash -c "while true; do sleep 3; done"
       - run:
           name: Copy project to base image
           command: |
@@ -196,7 +196,7 @@ jobs:
           command: docker exec $(docker-compose ps -q base) yarn test-verbose
       - run:
           name: Stop base image
-          command: docker-compose down --volumes --remove-orphans
+          command: docker stop $(docker-compose ps -q base)
       #- run:
       #    name: Run end-to-end tests
       #    command: |
