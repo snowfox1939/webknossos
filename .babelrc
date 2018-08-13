@@ -12,9 +12,14 @@
       plugins: [
         "transform-class-properties",
         "transform-flow-strip-types",
+        "transform-decorators-legacy",
         "syntax-dynamic-import",
         ["transform-object-rest-spread", { "useBuiltIns": true }],
-        "istanbul"
+        "istanbul",
+        ["flow-runtime", {
+            "assert": true,
+            "annotate": true
+        }],
       ],
     }
   },
