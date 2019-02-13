@@ -49,7 +49,7 @@ class AnnotationController @Inject()(
       val notFoundMessage =
         if (request.identity.isEmpty) "annotation.notFound.considerLoggingIn" else "annotation.notFound"
       for {
-        _ <- Fox.failure("Error 502") ?~> 502
+        _ <- Fox.failure("Error 502") ?~> "Error502" ~> BAD_GATEWAY
         annotation <- provider.provideAnnotation(typ, id, request.identity) ?~> notFoundMessage
         _ <- bool2Fox(annotation.state != Cancelled) ?~> "annotation.cancelled"
         restrictions <- provider.restrictionsFor(typ, id) ?~> "restrictions.notFound"
