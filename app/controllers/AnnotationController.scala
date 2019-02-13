@@ -49,6 +49,7 @@ class AnnotationController @Inject()(
       val notFoundMessage =
         if (request.identity.isEmpty) "annotation.notFound.considerLoggingIn" else "annotation.notFound"
       for {
+        _ <- Fox.failure("Error 502") ?~> 502
         annotation <- provider.provideAnnotation(typ, id, request.identity) ?~> notFoundMessage
         _ <- bool2Fox(annotation.state != Cancelled) ?~> "annotation.cancelled"
         restrictions <- provider.restrictionsFor(typ, id) ?~> "restrictions.notFound"
@@ -136,6 +137,7 @@ class AnnotationController @Inject()(
 
   def createExplorational(organizationName: String, dataSetName: String) =
     sil.SecuredAction.async(validateJson[CreateExplorationalParameters]) { implicit request =>
+      Thread.sleep(100 * 1000)
       for {
         organization <- organizationDAO.findOneByName(organizationName)(GlobalAccessContext) ?~> Messages(
           "organization.notFound",
